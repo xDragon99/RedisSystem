@@ -1,17 +1,17 @@
 package mc.dragon.redis;
 
+import com.google.gson.Gson;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.pubsub.StatefulRedisPubSubConnection;
-import mc.dragon.redis.impl.FSTCodec;
+import mc.dragon.redis.impl.GsonCodec;
 import mc.dragon.redis.packet.Packet;
-import org.nustaq.serialization.FSTConfiguration;
 
 public class RedisSystem {
 
-    private static final FSTConfiguration FST_CONFIG = FSTConfiguration.createDefaultConfiguration();
-    private static final FSTCodec FST_CODEC = new FSTCodec();
+    private static final Gson GSON = new Gson();
+    private static final GsonCodec PACKET_CODEC = new GsonCodec(GSON, Packet.class);
 
     private static RedisClient redisClient;
     private static StatefulRedisPubSubConnection<String, Packet> pubSubConnection;
@@ -25,9 +25,9 @@ public class RedisSystem {
                 .withPassword(password.toCharArray())
                 .build());
 
-        pubSubConnection = redisClient.connectPubSub(FST_CODEC);
+        pubSubConnection = redisClient.connectPubSub(PACKET_CODEC);
         databaseConnect = redisClient.connect();
-        connection = redisClient.connect(FST_CODEC);
+        connection = redisClient.connect(PACKET_CODEC);
 
         System.out.println("[RedisSystem] Connected to Redis!");
     }
@@ -38,12 +38,8 @@ public class RedisSystem {
         }
     }
 
-    public static FSTConfiguration getFstConfig() {
-        return FST_CONFIG;
-    }
-
-    public static FSTCodec getFstCodec() {
-        return FST_CODEC;
+    public static Gson getGson() {
+        return GSON;
     }
 
     public static RedisClient getRedisClient() {

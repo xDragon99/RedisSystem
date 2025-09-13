@@ -4,9 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
+    <groupId>mc.dragon</groupId>
     <artifactId>RedisSystem</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>on4</version>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -14,11 +14,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>de.ruedigermoeller</groupId>
-            <artifactId>fst</artifactId>
-            <version>3.0.3</version>
-        </dependency>
         <dependency>
             <groupId>io.lettuce</groupId>
             <artifactId>lettuce-core</artifactId>
@@ -29,6 +24,11 @@
             <artifactId>lombok</artifactId>
             <version>1.18.40</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.13.2</version>
         </dependency>
     </dependencies>
 
