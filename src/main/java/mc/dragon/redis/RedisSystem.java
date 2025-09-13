@@ -21,7 +21,7 @@ public class RedisSystem {
     public void connect(String host, String password) {
         redisClient = RedisClient.create(RedisURI.builder()
                 .withHost(host)
-                .withPort(6379)
+                .withPort(25584)
                 .withPassword(password.toCharArray())
                 .build());
 
