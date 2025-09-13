@@ -18,23 +18,36 @@ public class RedisSystem {
     private static StatefulRedisConnection<String, String> databaseConnect;
     private static StatefulRedisConnection<String, Packet> connection;
 
-    public void connect(String host, String password) {
-        redisClient = RedisClient.create(RedisURI.builder()
+    /**
+     * Połączenie z Redis.
+     * Jeśli username == null/empty → używa tylko hasła (requirepass).
+     * Jeśli username != null → używa ACL (username+password).
+     */
+    public void connect(String host, int port, String username, String password) {
+        RedisURI.Builder builder = RedisURI.builder()
                 .withHost(host)
-                .withPort(25584)
-                .withPassword(password.toCharArray())
-                .build());
+                .withPort(port);
+
+        if (username != null && !username.isEmpty()) {
+            builder.withAuthentication(username, password == null ? new char[0] : password.toCharArray());
+        } else if (password != null && !password.isEmpty()) {
+            builder.withPassword(password.toCharArray());
+        }
+
+        redisClient = RedisClient.create(builder.build());
 
         pubSubConnection = redisClient.connectPubSub(PACKET_CODEC);
         databaseConnect = redisClient.connect();
         connection = redisClient.connect(PACKET_CODEC);
 
-        System.out.println("[RedisSystem] Connected to Redis!");
+        System.out.printf("[RedisSystem] Connected to Redis at %s:%d (user=%s)%n",
+                host, port, username != null && !username.isEmpty() ? username : "<default>");
     }
 
     public void disconnect() {
         if (redisClient != null) {
             redisClient.shutdown();
+            System.out.println("[RedisSystem] Disconnected from Redis.");
         }
     }
 
