@@ -5,16 +5,13 @@ import mc.dragon.redis.RedisSystem;
 import mc.dragon.redis.packet.Packet;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 public class FSTCodec implements RedisCodec<String, Packet> {
 
-    private final Charset charset = StandardCharsets.UTF_8;
-
     @Override
     public String decodeKey(ByteBuffer bytes) {
-        return charset.decode(bytes).toString();
+        return StandardCharsets.UTF_8.decode(bytes).toString();
     }
 
     @Override
@@ -26,7 +23,7 @@ public class FSTCodec implements RedisCodec<String, Packet> {
 
     @Override
     public ByteBuffer encodeKey(String key) {
-        return charset.encode(key);
+        return StandardCharsets.UTF_8.encode(key);
     }
 
     @Override

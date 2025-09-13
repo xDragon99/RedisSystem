@@ -4,36 +4,39 @@ import mc.dragon.redis.RedisSystem;
 import mc.dragon.redis.impl.RedisListener;
 import mc.dragon.redis.packet.Packet;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class RedisUtilities {
 
-
-    private static final List<String> subscribedChannels = new ArrayList<>();
-    protected static RedisUtilities instance;
+    private static final Set<String> subscribedChannels = new HashSet<>();
+    private static RedisUtilities instance;
 
     public static RedisUtilities getInstance() {
-        if(instance == null)return new RedisUtilities();
+        if (instance == null) {
+            instance = new RedisUtilities();
+        }
         return instance;
     }
-    public RedisUtilities(){
+
+    private RedisUtilities() {
         instance = this;
     }
 
-    public void publish(String channel, Packet packet){
+    public void publish(String channel, Packet packet) {
         RedisSystem.getConnection().sync().publish(channel, packet);
     }
+
     public static void subscribe(String channel, RedisListener<? extends Packet> listener) {
         if (!channel.equals(listener.getChannel())) {
-            throw new IllegalStateException("Channel from subscribe method must be the same as Listener channel");
+            throw new IllegalStateException("Channel mismatch: listener = " +
+                    listener.getChannel() + ", subscribe() = " + channel);
         }
 
         RedisSystem.getPubSubConnection().addListener(listener);
 
-        if (!subscribedChannels.contains(channel)) {
+        if (subscribedChannels.add(channel)) {
             RedisSystem.getPubSubConnection().sync().subscribe(channel);
-            subscribedChannels.add(channel);
         }
     }
 }
